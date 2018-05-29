@@ -1,71 +1,56 @@
-﻿using Rocket.API;
-using SDG.Unturned;
-using System.Collections.Generic;
-using System;
-using Rocket.Unturned.Chat;
-using Rocket.Unturned.Player;
+﻿using System;
+using Rocket.API.Commands;
+using Rocket.API.Plugins;
+using Rocket.API.User;
+using Rocket.Core.Commands;
+using Rocket.Core.I18N;
 
 namespace fr34kyn01535.GlobalBan
 {
-    public class CommandKick : IRocketCommand
+    public class CommandKick : ICommand
     {
-        public string Help
+        private readonly GlobalBan _globalBanPlugin;
+
+        public CommandKick(IPlugin plugin)
         {
-            get { return "Kicks a player"; }
+            _globalBanPlugin = (GlobalBan)plugin;
         }
 
-        public string Name
+        public string Name => "kick";
+        public string[] Aliases => null;
+        public string Summary => "Kicks a player.";
+        public string Description => null;
+        public string Permission => null;
+        public string Syntax => "<player> [reason]";
+        public IChildCommand[] ChildCommands => null;
+
+        public bool SupportsUser(Type user)
         {
-            get { return "kick"; }
+            return true;
         }
 
-        public string Syntax
+        public void Execute(ICommandContext context)
         {
-            get { return "<player> [reason]"; }
-        }
-
-        public List<string> Aliases
-        {
-            get { return new List<string>(); }
-        }
-
-        public AllowedCaller AllowedCaller
-        {
-            get { return AllowedCaller.Both; }
-        }
-
-        public List<string> Permissions
-        {
-            get
+            if (context.Parameters.Length == 0 || context.Parameters.Length > 2)
             {
-                return new List<string>() { "globalban.kick" };
+                throw new CommandWrongUsageException();
             }
-        }
 
-        public void Execute(IRocketPlayer caller, params string[] command)
-        {
+            var globalUserManager = context.Container.Resolve<IUserManager>();
+            IUser userToKick = context.Parameters.Get<IUser>(0);
 
-            if (command.Length == 0 || command.Length > 2)
+            string reason = _globalBanPlugin.Translations.Get("command_kick_private_default_reason");
+            if (context.Parameters.Length >= 2)
             {
-                UnturnedChat.Say(caller, GlobalBan.Instance.Translate("command_generic_invalid_parameter"));
-                return;
-            }
-            UnturnedPlayer playerToKick = UnturnedPlayer.FromName(command[0]);
-            if (playerToKick == null)
-            {
-                UnturnedChat.Say(caller, GlobalBan.Instance.Translate("command_generic_player_not_found"));
-                return;
-            }
-            if (command.Length >= 2)
-            {
-                UnturnedChat.Say(GlobalBan.Instance.Translate("command_kick_public_reason", playerToKick.SteamName, command[1]));
-                Provider.kick(playerToKick.CSteamID, command[1]);
+                reason = context.Parameters.GetArgumentLine(1);
+                globalUserManager.BroadcastLocalized(_globalBanPlugin.Translations, "command_kick_public_reason", userToKick.Name, reason);
             }
             else
             {
-                UnturnedChat.Say(GlobalBan.Instance.Translate("command_kick_public", playerToKick.SteamName));
-                Provider.kick(playerToKick.CSteamID, GlobalBan.Instance.Translate("command_kick_private_default_reason"));
+                globalUserManager.BroadcastLocalized(_globalBanPlugin.Translations, "command_kick_public", userToKick.Name);
             }
+
+            userToKick.UserManager.Kick(userToKick, context.User, reason);
         }
     }
 }

@@ -1,66 +1,55 @@
-﻿using Rocket.API;
-using Rocket.Unturned.Chat;
-using SDG.Unturned;
-using Steamworks;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using Rocket.API.Commands;
+using Rocket.API.Plugins;
+using Rocket.API.User;
+using Rocket.Core.Commands;
+using Rocket.Core.I18N;
+using Rocket.Core.User;
 
 namespace fr34kyn01535.GlobalBan
 {
-    public class CommandUnban : IRocketCommand
+    public class CommandUnban : ICommand
     {
-        public string Help
+        private readonly GlobalBan _globalBanPlugin;
+
+        public CommandUnban(IPlugin plugin)
         {
-            get { return "Unbanns a player"; }
+            _globalBanPlugin = (GlobalBan)plugin;
         }
 
-        public string Name
+        public string Name => "unban";
+        public string[] Aliases => null;
+        public string Permission => null;
+        public string Syntax => "<player>";
+        public IChildCommand[] ChildCommands => null;
+        public string Summary => "Unbans a player.";
+        public string Description => null;
+
+        public bool SupportsUser(Type user)
         {
-            get { return "unban"; }
+            return true;
         }
 
-        public string Syntax
+        public void Execute(ICommandContext context)
         {
-            get { return "<player>"; }
-        }
-
-        public List<string> Aliases
-        {
-            get { return new List<string>(); }
-        }
-
-        public AllowedCaller AllowedCaller
-        {
-            get { return AllowedCaller.Both; }
-        }
-
-        public List<string> Permissions
-        {
-            get
+            if (context.Parameters.Length != 1)
             {
-                return new List<string>() { "globalban.unban" };
+                throw new CommandWrongUsageException();
             }
-        }
 
-        public void Execute(IRocketPlayer caller, params string[] command)
-        {
-            if (command.Length != 1)
+            IUserManager globalUserManager = context.Container.Resolve<IUserManager>();
+            IUserInfo target = context.Parameters.Get<IUserInfo>(0);
+
+            DatabaseManager.UnbanResult name = _globalBanPlugin.Database.UnbanPlayer(target);
+
+
+            if (!target.UserManager.Unban(target, context.User) && String.IsNullOrEmpty(name.Name))
             {
-                UnturnedChat.Say(caller, GlobalBan.Instance.Translate("command_generic_invalid_parameter"));
+                context.User.SendLocalizedMessage(_globalBanPlugin.Translations, "command_generic_player_not_found");
                 return;
             }
 
-            fr34kyn01535.GlobalBan.DatabaseManager.UnbanResult name = GlobalBan.Instance.Database.UnbanPlayer(command[0]);
-            if (!SteamBlacklist.unban(new CSteamID(name.Id)) && String.IsNullOrEmpty(name.Name))
-            {
-                UnturnedChat.Say(caller, GlobalBan.Instance.Translate("command_generic_player_not_found"));
-                return;
-            }
-            else
-            {
-                UnturnedChat.Say("The player " + name.Name + " was unbanned");
-            }
+            globalUserManager.Broadcast(null, "The player " + name.Name + " was unbanned");
         }
-
     }
 }
