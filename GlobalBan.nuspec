@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<package>
+  <metadata>
+    <id>GlobalBan</id>
+    <version>1.0</version>
+    <authors>Sven Mawby&lt;fr34kyn01535@bam.yt&gt;, Enes Sadık Özbek &lt;esozbek.me&gt;</authors>
+    <owners>Sven Mawby&lt;fr34kyn01535@bam.yt&gt;</owners>
+    <licenseUrl>https://github.com/RocketModPlugins/GlobalBan/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/RocketModPlugins/GlobalBan/</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Globan Ban provides synchronized SQL bans for your servers.</description>
+    <copyright>Sven Mawby&lt;fr34kyn01535@bam.yt&gt; ©</copyright>
+    <tags>RocketMod Universal</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\GlobalBan.dll" target="lib\net35\" />
+    <file src="lib\net35\I18N.dll" target="lib\net35\" />
+	<file src="lib\net35\I18N.West.dll" target="lib\net35\" />	
+	<file src="lib\net35\MySql.Data.dll" target="lib\net35\" />		
+	<file src="lib\net35\System.Data.dll" target="lib\net35\" />		
+	<file src="lib\net35\System.Management.dll" target="lib\net35\" />		
+	<file src="lib\net35\System.Transactions.dll" target="lib\net35\" />
+  </files>
+</package>
