@@ -40,7 +40,7 @@ namespace fr34kyn01535.GlobalBan
             IUserManager globalUserManager = context.Container.Resolve<IUserManager>();
 
             IUserInfo toBan = context.Parameters.Get<IUserInfo>(0);
-            IUser toBanUser = toBan.UserManager.Users.FirstOrDefault(c =>
+            IUser toBanUser = toBan.UserManager.OnlineUsers.FirstOrDefault(c =>
                 string.Equals(c.Id, toBan.Id, StringComparison.OrdinalIgnoreCase));
 
             string reason = _globalBanPlugin.Translations.Get("command_ban_private_default_reason");
