@@ -1,36 +1,30 @@
 ﻿using System;
-using System.Linq;
+using System.Threading.Tasks;
 using Rocket.API.Commands;
 using Rocket.API.Plugins;
 using Rocket.API.User;
 using Rocket.Core.Commands;
-using Rocket.Core.I18N;
 
-namespace fr34kyn01535.GlobalBan
+namespace fr34kyn01535.GlobalBan.Commands
 {
     public class CommandBan : ICommand
     {
-        private readonly GlobalBan _globalBanPlugin;
+        public string Name => "ban";
+        public string[] Aliases => null;
+        public string Syntax => "<player> [reason] [duration]";
+        public string Summary => "Bans a player.";
+        public string Description => null;
+        public bool SupportsUser(IUser user) => true;
+        public IChildCommand[] ChildCommands => null;
+
+        private readonly GlobalBanPlugin _plugin;
 
         public CommandBan(IPlugin plugin)
         {
-            _globalBanPlugin = (GlobalBan) plugin;
+            _plugin = (GlobalBanPlugin) plugin;
         }
 
-        public string Name => "ban";
-        public string[] Aliases => null;
-        public string Summary => "Bans a player.";
-        public string Description => null;
-        public string Permission => null;
-        public string Syntax => "<player> [reason] [duration]";
-        public IChildCommand[] ChildCommands => null;
-
-        public bool SupportsUser(Type user)
-        {
-            return true;
-        }
-
-        public void Execute(ICommandContext context)
+        public async Task ExecuteAsync(ICommandContext context)
         {
             if (context.Parameters.Length == 0 || context.Parameters.Length > 3)
             {
@@ -43,7 +37,7 @@ namespace fr34kyn01535.GlobalBan
             IUser toBanUser = toBan.UserManager.OnlineUsers.FirstOrDefault(c =>
                 string.Equals(c.Id, toBan.Id, StringComparison.OrdinalIgnoreCase));
 
-            string reason = _globalBanPlugin.Translations.Get("command_ban_private_default_reason");
+            string reason = _plugin.Translations.Get("command_ban_private_default_reason");
             bool hasPublicReason = false;
             if (context.Parameters.Length > 1 )
             {
@@ -59,15 +53,15 @@ namespace fr34kyn01535.GlobalBan
 
             if (hasPublicReason)
             {
-                globalUserManager.BroadcastLocalized(_globalBanPlugin.Translations, "command_ban_public_reason", toBan.Name, reason);
+                globalUserManager.BroadcastLocalized(_plugin.Translations, "command_ban_public_reason", toBan.Name, reason);
 
             }
             else
             {
-                globalUserManager.BroadcastLocalized(_globalBanPlugin.Translations, "command_ban_public", toBan.Name);
+                globalUserManager.BroadcastLocalized(_plugin.Translations, "command_ban_public", toBan.Name);
             }
 
-            _globalBanPlugin.Database.BanPlayer(toBan, context.User, reason, duration);
+            _plugin.Database.BanPlayer(toBan, context.User, reason, duration);
             toBanUser?.UserManager.Kick(toBanUser, context.User, reason);
         }
     }
