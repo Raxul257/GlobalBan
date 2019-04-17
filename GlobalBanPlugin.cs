@@ -1,6 +1,7 @@
 ﻿using Rocket.Core.Plugins;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Rocket.API.DependencyInjection;
 using Rocket.API.Eventing;
 using Rocket.Core.Player.Events;
@@ -17,7 +18,10 @@ namespace fr34kyn01535.GlobalBan
 
         protected override async Task OnActivate(bool isFromReload)
         {
-            
+            using (var context = new GlobalBanDbContext(this))
+            {
+                await context.Database.MigrateAsync();
+            }
         }
 
         public async Task HandleEventAsync(IEventEmitter emitter, PlayerPreConnectEvent @event)

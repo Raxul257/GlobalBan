@@ -26,43 +26,43 @@ namespace fr34kyn01535.GlobalBan.Commands
 
         public async Task ExecuteAsync(ICommandContext context)
         {
-            if (context.Parameters.Length == 0 || context.Parameters.Length > 3)
-            {
-                throw new CommandWrongUsageException();
-            }
+            //if (context.Parameters.Length == 0 || context.Parameters.Length > 3)
+            //{
+            //    throw new CommandWrongUsageException();
+            //}
 
-            IUserManager globalUserManager = context.Container.Resolve<IUserManager>();
+            //IUserManager globalUserManager = context.Container.Resolve<IUserManager>();
 
-            IUserInfo toBan = context.Parameters.Get<IUserInfo>(0);
-            IUser toBanUser = toBan.UserManager.OnlineUsers.FirstOrDefault(c =>
-                string.Equals(c.Id, toBan.Id, StringComparison.OrdinalIgnoreCase));
+            //IUserInfo toBan = context.Parameters.Get<IUserInfo>(0);
+            //IUser toBanUser = toBan.UserManager.OnlineUsers.FirstOrDefault(c =>
+            //    string.Equals(c.Id, toBan.Id, StringComparison.OrdinalIgnoreCase));
 
-            string reason = _plugin.Translations.Get("command_ban_private_default_reason");
-            bool hasPublicReason = false;
-            if (context.Parameters.Length > 1 )
-            {
-                reason = context.Parameters.Get<string>(1);
-                hasPublicReason = true;
-            }
+            //string reason = _plugin.Translations.Get("command_ban_private_default_reason");
+            //bool hasPublicReason = false;
+            //if (context.Parameters.Length > 1 )
+            //{
+            //    reason = context.Parameters.Get<string>(1);
+            //    hasPublicReason = true;
+            //}
 
-            int duration = 0;
-            if (context.Parameters.Length > 2)
-            {
-                duration = context.Parameters.Get<int>(2);
-            }
+            //int duration = 0;
+            //if (context.Parameters.Length > 2)
+            //{
+            //    duration = context.Parameters.Get<int>(2);
+            //}
 
-            if (hasPublicReason)
-            {
-                globalUserManager.BroadcastLocalized(_plugin.Translations, "command_ban_public_reason", toBan.Name, reason);
+            //if (hasPublicReason)
+            //{
+            //    globalUserManager.BroadcastLocalized(_plugin.Translations, "command_ban_public_reason", toBan.Name, reason);
 
-            }
-            else
-            {
-                globalUserManager.BroadcastLocalized(_plugin.Translations, "command_ban_public", toBan.Name);
-            }
+            //}
+            //else
+            //{
+            //    globalUserManager.BroadcastLocalized(_plugin.Translations, "command_ban_public", toBan.Name);
+            //}
 
-            _plugin.Database.BanPlayer(toBan, context.User, reason, duration);
-            toBanUser?.UserManager.Kick(toBanUser, context.User, reason);
+            //_plugin.Database.BanPlayer(toBan, context.User, reason, duration);
+            //toBanUser?.UserManager.Kick(toBanUser, context.User, reason);
         }
     }
 }

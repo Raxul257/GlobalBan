@@ -26,24 +26,24 @@ namespace fr34kyn01535.GlobalBan.Commands
 
         public async Task ExecuteAsync(ICommandContext context)
         {
-            if (context.Parameters.Length != 1)
-            {
-                throw new CommandWrongUsageException();
-            }
+            //if (context.Parameters.Length != 1)
+            //{
+            //    throw new CommandWrongUsageException();
+            //}
 
-            IUserManager globalUserManager = context.Container.Resolve<IUserManager>();
-            IUserInfo target = context.Parameters.Get<IUserInfo>(0);
+            //IUserManager globalUserManager = context.Container.Resolve<IUserManager>();
+            //IUserInfo target = context.Parameters.Get<IUserInfo>(0);
 
-            DatabaseManager.UnbanResult name = _globalBanPluginPlugin.Database.UnbanPlayer(target);
+            //DatabaseManager.UnbanResult name = _globalBanPluginPlugin.Database.UnbanPlayer(target);
 
 
-            if (!target.UserManager.Unban(target, context.User) && String.IsNullOrEmpty(name.Name))
-            {
-                context.User.SendLocalizedMessage(_globalBanPluginPlugin.Translations, "command_generic_player_not_found");
-                return;
-            }
+            //if (!target.UserManager.Unban(target, context.User) && String.IsNullOrEmpty(name.Name))
+            //{
+            //    context.User.SendLocalizedMessage(_globalBanPluginPlugin.Translations, "command_generic_player_not_found");
+            //    return;
+            //}
 
-            globalUserManager.Broadcast(null, "The player " + name.Name + " was unbanned");
+            //globalUserManager.Broadcast(null, "The player " + name.Name + " was unbanned");
         }
     }
 }
